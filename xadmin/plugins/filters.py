@@ -8,7 +8,6 @@ from django.core.exceptions import SuspiciousOperation, ImproperlyConfigured, Va
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.constants import LOOKUP_SEP
-from django.db.models.sql.constants import QUERY_TERMS
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import smart_str
@@ -21,7 +20,16 @@ from xadmin.views import BaseAdminPlugin, ListAdminView
 from xadmin.util import is_related_field
 from functools import reduce
 
-
+try:
+    from django.db.models.sql.constants import QUERY_TERMS
+except ImportError:
+    # Django 2.1
+   QUERY_TERMS = {
+      'exact', 'iexact', 'contains', 'icontains', 'gt', 'gte', 'lt', 'lte', 'in',
+      'startswith', 'istartswith', 'endswith', 'iendswith', 'range', 'year',
+      'month', 'day', 'week_day', 'hour', 'minute', 'second', 'isnull', 'search',
+      'regex', 'iregex',
+   }
 class IncorrectLookupParameters(Exception):
     pass
 

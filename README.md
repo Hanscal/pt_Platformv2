@@ -32,7 +32,7 @@ xlwt (1.3.0)
 - 运行以下命令并按照步骤执行创建超级用户
 
   ```
-  python manage.py create superuser
+  python manage.py createsuperuser
   ```
 
 - 运行以下命令来运行系统

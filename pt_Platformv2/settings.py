@@ -87,9 +87,9 @@ WSGI_APPLICATION = 'pt_Platformv2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'data_label_v2',
+        'NAME': 'django_pt',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'mysqlCH1989',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

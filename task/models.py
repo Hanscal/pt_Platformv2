@@ -2,6 +2,7 @@ from django.db import models
 from user.models import UserProfile
 from datetime import datetime
 
+
 # Create your models here.
 class Task(models.Model):
     name = models.CharField(max_length=200, verbose_name='任务名称')
@@ -26,13 +27,13 @@ class Task(models.Model):
         return True
 
     def get_data(self):
-        data =  self.dataitem_set().all()
+        data = self.dataitem_set().all()
         return data
-
 
     class Meta:
         verbose_name = '标注任务'
         verbose_name_plural = verbose_name
+
 
 class LabelClass(models.Model):
     name = models.CharField(max_length=50, verbose_name='大类标签')
@@ -46,11 +47,12 @@ class LabelClass(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return  self.name
+        return self.name
+
 
 class LabelSubClass(models.Model):
     name = models.CharField(max_length=50, verbose_name='子类标签')
-    desc = models.CharField(max_length=500, verbose_name='说明', blank=True,null=True)
+    desc = models.CharField(max_length=500, verbose_name='说明', blank=True, null=True)
     parent = models.ForeignKey(LabelClass, verbose_name='父类', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -63,9 +65,12 @@ class LabelSubClass(models.Model):
     def get_task(self):
         return self.parent.task
 
+
 class DataItem(models.Model):
     mid = models.CharField(max_length=50, verbose_name='自定义id')
     img_name = models.CharField(max_length=50, verbose_name='图片文件', blank=True, null=True)
+    image = models.ImageField(upload_to='图片', verbose_name='待标注图片')
+    text = models.FileField(upload_to='文本', verbose_name='待标注文本')
     txt = models.TextField(verbose_name='文本')
     task = models.ForeignKey(Task, verbose_name='任务', on_delete=models.CASCADE)
     time = models.DateTimeField(verbose_name='标记时间', default=datetime.now)
