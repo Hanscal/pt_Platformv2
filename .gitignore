@@ -1,0 +1,6 @@
+*.pyc
+*.sqlites
+__pycache__
+.idea
+*/__pycache__
+*/*/__pycache__
