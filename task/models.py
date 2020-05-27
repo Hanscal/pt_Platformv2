@@ -1,7 +1,8 @@
 from django.db import models
 from user.models import UserProfile
 from datetime import datetime
-
+from stdimage.utils import UploadToUUID
+from stdimage.models import StdImageField
 
 # Create your models here.
 class Task(models.Model):
@@ -68,9 +69,7 @@ class LabelSubClass(models.Model):
 
 class DataItem(models.Model):
     mid = models.CharField(max_length=50, verbose_name='自定义id')
-    img_name = models.CharField(max_length=50, verbose_name='图片文件', blank=True, null=True)
-    image = models.ImageField(upload_to='图片', verbose_name='待标注图片')
-    text = models.FileField(upload_to='文本', verbose_name='待标注文本')
+    img_name = models.CharField(max_length=50, verbose_name='图片', blank=True, null=True)
     txt = models.TextField(verbose_name='文本')
     task = models.ForeignKey(Task, verbose_name='任务', on_delete=models.CASCADE)
     time = models.DateTimeField(verbose_name='标记时间', default=datetime.now)
@@ -78,3 +77,15 @@ class DataItem(models.Model):
     class Meta:
         verbose_name = '待标注数据'
         verbose_name_plural = verbose_name
+
+
+class ImportFile(models.Model):
+    image = models.ImageField(upload_to='图片')
+    img_name = models.CharField(max_length=50, verbose_name='图片名')
+    # text = models.FileField(upload_to='文本', verbose_name='文本文件')
+    # txt_name =
+    class Meta:
+        verbose_name = '上传图片'
+
+    def __str__(self):
+        return self.img_name

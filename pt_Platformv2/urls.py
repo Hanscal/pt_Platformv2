@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
+from django.conf.urls import url, include
 from django.views.static import serve
 
 from .settings import MEDIA_ROOT
@@ -33,5 +34,6 @@ urlpatterns = [
     path('label/<str:task_id>/', LabelView.as_view(), name='label'),
     path('next', NextView.as_view(), name='next'),
     path('close_task/<str:task_id>/', CloseTaskView.as_view(), name='close_task'),
+    url(r'^ueditor', include('DjangoUeditor.urls')),
     re_path('media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT})
 ]
