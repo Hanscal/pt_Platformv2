@@ -101,8 +101,8 @@ class DataItemAdmin(object):
             file = request.FILES.get('excel')
             struct_data = process_excel_file(file)
             for item in struct_data:
-                mid, img_name, txt, task = int(item[0]), item[1], item[2], item[3]
-                DataItem.objects.get_or_create(mid=mid, img_name=img_name, txt=txt, task_id=1, image='image_placeholder')
+                mid, img_name, txt, task_id = int(item[0]), item[1], item[2], int(item[3])
+                DataItem.objects.get_or_create(mid=mid, img_name=img_name, txt=txt, task_id=task_id)
         return super(DataItemAdmin, self).post(request, args, kwargs)
 
 

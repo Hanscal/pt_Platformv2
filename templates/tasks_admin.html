@@ -53,8 +53,8 @@
                 </h2>
                 <table class="table table-striped" style="margin-top: 20px">
                     <tbody>
-                    <tr>
                         {% for task in tasks.object_list %}
+                            <tr>
                             <td>{{ task.name }}</td>
                             <td>任务状态：{% if task.has_distributed %}
                                 已分配任务
@@ -67,10 +67,9 @@
                             {% else %}
                                 未完成&nbsp;&nbsp;<a href="{% url 'close_task' task.id %}"><strong>结束任务</strong></a>
                             {% endif %}</td>
+                        </tr>
                         {% endfor %}
 
-
-                    </tr>
                     </tbody>
                 </table>
                 <ul class="pagination pagination-lg">
