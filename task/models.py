@@ -1,7 +1,8 @@
 from django.db import models
 from user.models import UserProfile
 from datetime import datetime
-
+from stdimage.utils import UploadToUUID
+from stdimage.models import StdImageField
 
 # Create your models here.
 class Task(models.Model):
@@ -34,6 +35,8 @@ class Task(models.Model):
         verbose_name = '标注任务'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
 
 class LabelClass(models.Model):
     name = models.CharField(max_length=50, verbose_name='大类标签')
@@ -68,13 +71,29 @@ class LabelSubClass(models.Model):
 
 class DataItem(models.Model):
     mid = models.CharField(max_length=50, verbose_name='自定义id')
-    img_name = models.CharField(max_length=50, verbose_name='图片文件', blank=True, null=True)
-    image = models.ImageField(upload_to='图片', verbose_name='待标注图片')
-    text = models.FileField(upload_to='文本', verbose_name='待标注文本')
+    img_name = models.CharField(max_length=50, verbose_name='图片', blank=True, null=True)
+    image = models.CharField(max_length=50, verbose_name='图片占位')
     txt = models.TextField(verbose_name='文本')
+    #  task与DataItem是“一对多”关系，所以用ForeignKey,一个task匹配多个DataItem，此处的Task字段对应实际表中的task_id,来自于Task表中主键
     task = models.ForeignKey(Task, verbose_name='任务', on_delete=models.CASCADE)
-    time = models.DateTimeField(verbose_name='标记时间', default=datetime.now)
+    time = models.DateField(verbose_name='标记时间', default=datetime.now)
 
     class Meta:
         verbose_name = '待标注数据'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.img_name
+
+
+# class ImportFile(models.Model):
+#     image = models.ImageField(upload_to='图片')
+#     img_name = models.CharField(max_length=50, verbose_name='图片名')
+#     # text = models.FileField(upload_to='文本', verbose_name='文本文件')
+#     # txt_name =
+#     time = models.DateTimeField(verbose_name='标记时间', default=datetime.now)
+#     class Meta:
+#         verbose_name = '上传图片'
+#
+#     def __str__(self):
+#         return self.img_name

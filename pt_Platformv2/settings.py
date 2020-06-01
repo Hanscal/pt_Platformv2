@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# 将extra_apps的添加至python项目的搜索目录
+sys.path.insert(0, os.path.join(BASE_DIR, 'extra_app'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -43,7 +45,9 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'pure_pagination',
-    'import_export'
+    'import_export',
+    'stdimage',
+    'DjangoUeditor'
 ]
 
 AUTH_USER_MODEL = "user.UserProfile"

@@ -2,3 +2,7 @@
 *.sqlites
 __pycache__
 .idea
+.DS_Store
+media
+*/__pycache__
+*/*/__pycache__
