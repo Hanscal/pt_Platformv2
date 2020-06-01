@@ -6,9 +6,10 @@ from .models import DataItem
 from django.apps import apps
 from .db_utils import process_excel_file, process_data, save_file
 
+
 class DataItemResource(resources.ModelResource):
     def __init__(self):
-        super(DataItemResource,self).__init__()
+        super(DataItemResource, self).__init__()
         field_list = apps.get_model('task', 'DataItem')._meta.fields
         self.verbose_name_dict = {}
         for i in field_list:
@@ -32,16 +33,17 @@ class DataItemResource(resources.ModelResource):
 
 from task.models import LabelClass, LabelSubClass, Task, DataItem
 
+
 class LabelClassInline(object):
     model = LabelClass
     extra = 0
 
+
 class TaskAdmin(object):
-    list_display = ['id','name', 'creator', 'has_finished', 'creator']
+    list_display = ['id', 'name', 'creator', 'has_finished', 'creator']
     search_fields = ['name', 'creator']
     readonly_fields = ['has_finished', 'has_distributed', 'creator']
     inlines = [LabelClassInline]
-
 
     def save_models(self):
         obj = self.new_obj
@@ -53,8 +55,9 @@ class TaskAdmin(object):
         user = self.request.user
         if user.is_superuser == 1:
             return qs
-        qs = qs.filter(creator = user)
+        qs = qs.filter(creator=user)
         return qs
+
 
 class LabelClassAdmin(object):
     list_display = ['name', 'task']
@@ -65,8 +68,9 @@ class LabelClassAdmin(object):
         user = self.request.user
         if user.is_superuser == 1:
             return qs
-        qs = qs.filter(task__creator = user)
+        qs = qs.filter(task__creator=user)
         return qs
+
 
 class LabelSubClassAdmin(object):
     list_display = ['name', 'parent', 'get_task']
@@ -77,40 +81,50 @@ class LabelSubClassAdmin(object):
         user = self.request.user
         if user.is_superuser == 1:
             return qs
-        qs = qs.filter(parent__task__creator = user)
+        qs = qs.filter(parent__task__creator=user)
         return qs
 
+
 class DataItemAdmin(object):
-    list_display = ['mid', 'task']
+    list_display = ['mid', 'img_name', 'txt', 'task']
     ordering = ['task']
     list_filter = ['task']
     # 配置导入导出按钮
-    import_export_args = {
-        'import_resource_class': DataItemResource
-    }
+    # import_export_args = {
+    #     'import_resource_class': DataItemResource, 'export_resource_class': DataItemResource
+    # }
     import_excel = True
 
     def post(self, request, *args, **kwargs):
         if 'excel' in request.FILES:
             # 可以增加逻辑代码
             file = request.FILES.get('excel')
-            data = file.readlines()
-            save_file(file.name, data)
-            data_list = process_data(data)
+            struct_data = process_excel_file(file)
+            for item in struct_data:
+                mid, img_name, txt, task = int(item[0]), item[1], item[2], item[3]
+                DataItem.objects.get_or_create(mid=mid, img_name=img_name, txt=txt, task_id=1, image='image_placeholder')
         return super(DataItemAdmin, self).post(request, args, kwargs)
+
 
     def queryset(self):
         qs = super(DataItemAdmin, self).queryset()
         user = self.request.user
         if user.is_superuser == 1:
             return qs
-        qs = qs.filter(task__creator = user)
+        qs = qs.filter(task__creator=user)
         return qs
+
+
+# class ImportFileAdmin(object):
+#     list_display = ['mid', 'task']
+#     ordering = ['task']
+#     list_filter = ['task']
 
 xadmin.site.register(Task, TaskAdmin)
 xadmin.site.register(LabelClass, LabelClassAdmin)
 xadmin.site.register(LabelSubClass, LabelSubClassAdmin)
 xadmin.site.register(DataItem, DataItemAdmin)
+
 
 class GlobalSettings(object):
     # 修改title

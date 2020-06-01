@@ -2,6 +2,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction, router
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django import VERSION as django_version
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import escape
@@ -29,10 +30,16 @@ class DeleteAdminView(ModelAdminView):
 
         using = router.db_for_write(self.model)
 
+        if django_version > (2, 0):
+            setattr(self.admin_site._registry[self.model], 'has_delete_permission', self.has_delete_permission)
         # Populate deleted_objects, a data structure of all related objects that
         # will also be deleted.
-        (self.deleted_objects, model_count, self.perms_needed, self.protected) = get_deleted_objects(
-            [self.obj], self.opts, self.request.user, self.admin_site, using)
+        if django_version > (2, 0):
+            (self.deleted_objects, model_count, self.perms_needed, self.protected) = get_deleted_objects(
+                [self.obj], self.opts, self.admin_site)
+        else:
+            (self.deleted_objects, model_count, self.perms_needed, self.protected) = get_deleted_objects(
+                [self.obj], self.opts, self.request.user, self.admin_site, using)
 
     @csrf_protect_m
     @filter_hook

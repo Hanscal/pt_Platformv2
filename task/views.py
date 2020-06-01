@@ -146,6 +146,39 @@ class CloseTaskView(View):
         return HttpResponseRedirect(reverse('admin_index'))
 
 
+class DataPreview(View):
+    def get(self, request):
+        if not (request.user.is_authenticated and request.user.is_staff):
+            return render(request, 'login.html')
+        user = request.user
+        task_id = request.POST.get('task_id')
+        task = Task.objects.get(id=task_id)
+        data = request.POST.get('file')
+        for label in data:
+            label_result = Labelresult()
+            label_result.mid = label.data_item.mid
+            label_result.txt = label.data_item.txt
+            label_result.img_name = label.data_item.img_name
+            label_result.tagger = user
+            label_result.label = LabelSubClass.objects.get(id=label)
+            label_result.task = task
+            label_result.save()
+
+        try:
+            label_task = LabelTask.objects.filter(data_item__task=task, has_done=0, tagger=user)[0]
+            has_skipped = 0
+        except:
+            # 已经查不到未标注数据，查询跳过的数据
+            try:
+                label_task = LabelTask.objects.filter(data_item__task=task, has_done=1, tagger=user)[0]
+                has_skipped = 1
+            except:
+                return HttpResponse('{"status":"finished"}', content_type='application/json')
+        info = label_task.data_item
+        unfinished_count = user.get_count_unfinished(task_id)
+        msg = {'txt': info.txt, 'image': info.img_name, 'uc': unfinished_count, 'id': label_task.id,
+               'has_skipped': has_skipped}
+        return HttpResponse(json.dumps(msg), content_type='application/json')
 
 
 

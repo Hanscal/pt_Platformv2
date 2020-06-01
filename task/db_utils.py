@@ -10,6 +10,7 @@
 import os
 import sys
 import xlrd
+import openpyxl
 from openpyxl.utils import get_column_letter
 from .models import DataItem
 
@@ -46,16 +47,18 @@ def save_file(filename, data_list):
             line = data.strip().split()
             fw.write('\t'.join(line) + '\n')
 
-def process_excel_file(file_path):
+def process_excel_file(file):
     res = []
-    wb = xlrd.open_workbook(filename=file_path)  # 打开文件
-    print(wb.sheet_names())  # 获取所有表格名字
-    sheet1 = wb.sheet_by_index(0)  # 通过索引获取表格
-    print(sheet1.name, sheet1.nrows, sheet1.ncols)
+    wb = openpyxl.load_workbook(file)  # 打开文件
+    sheetnames_list = wb.sheetnames  # 获取所有表格名字
+    sheet1 = wb.get_sheet_by_name(sheetnames_list[0])  # 通过索引获取表格
+    # print(sheet1.name, sheet1.nrows, sheet1.ncols)
 
-    for irow in sheet1.nrows[1:]:
-        rowdata = sheet1.row_values(irow)
-        res.append(rowdata[:])
+    for row in sheet1.iter_rows():
+        row_data = list()
+        for cell in row:
+            row_data.append(str(cell.value))
+        res.append(row_data)
     return res
 
 def process_txt_file(file_path):
